@@ -1,3 +1,4 @@
+
 name = "cloud-mail"
 main = "src/index.js"
 compatibility_date = "2025-06-04"
@@ -6,45 +7,46 @@ keep_vars = true
 [observability]
 enabled = true
 
-#[[d1_databases]]
-#binding = "db"			#d1数据库绑定名默认不可修改
-#database_name = ""		#d1数据库名字
-#database_id = ""		#d1数据库id
+# D1 Database
+# Akan diaktifkan setelah database dibuat
+# [[d1_databases]]
+# binding = "db"
+# database_name = "clashmate-mail-db"
+# database_id = "ISI_DATABASE_ID"
 
-#[[kv_namespaces]]
-#binding = "kv"			#kv绑定名默认不可修改
-#id = ""					#kv数据库id
+# Workers KV
+[[kv_namespaces]]
+binding = "kv"
+id = "ee9d8c3017874c639157fc1bbc8f8733"
 
-#[[r2_buckets]]
-#binding = "r2"			#r2对象存储绑定名默认不可修改
-#bucket_name = ""		#r2对象存储桶的名字
+# R2 Storage (opsional)
+# [[r2_buckets]]
+# binding = "r2"
+# bucket_name = "clashmate-mail-storage"
 
-#[[send_email]]
-#name = "email"			#CF发件, 配置后优先使用
-
+# Cloudflare Email Sending
 [[send_email]]
-name = "forward"		#站内转发到已验证的其他邮箱，不限制单个地址
+name = "forward"
 
+# Workers AI
 [ai]
 binding = "ai"
 
+# Static Assets
 [assets]
-binding = "assets"		#静态资源绑定名默认不可修改
-directory = "./dist"	#前端vue项目打包的静态资源存放位置,默认dist
+binding = "assets"
+directory = "./dist"
 not_found_handling = "single-page-application"
 run_worker_first = true
 
 [triggers]
-crons = ["0 * * * *"]	#每小时执行；resetDaySendCount 仅在 UTC 0 点生效
-
+crons = ["0 * * * *"]
 
 [vars]
-#ai_model = ""			#ai模型,不填默认使用@cf/meta/llama-3.1-8b-instruct-fast
-#analysis_cache = false			#是否开启分析数据缓存
-#orm_log = false			#是否sql日志
-#domain = []				#邮件域名可可配置多个 示例: ["example1.com","example2.com"]
-#admin = ""					#管理员的邮箱	示例: admin@example.com
-#jwt_secret = ""			#jwt令牌的密钥,随便填一串字符串
+# Konfigurasi aplikasi akan ditambahkan setelah database siap
+# domain = ["clashmate.id"]
+# admin = "admin@clashmate.id"
+# jwt_secret = "GANTI_DENGAN_SECRET_ACAK_YANG_KUAT"
 
 [build]
 command = "pnpm --prefix ../mail-vue install && pnpm --prefix ../mail-vue run build"
