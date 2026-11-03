@@ -87,11 +87,33 @@ onBeforeUnmount(() => {
   top: 0;
   left: 0;
   overflow: hidden;
+  background: #eaedf1;
+}
+
+@media (min-width: 1200px) {
+  .layout {
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .el-aside {
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    overflow: hidden;
+    box-shadow: -1px 0 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .main-container {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  }
 }
 
 .main-container {
   min-height: 100%;
-  background: var(--el-bg-color);
+  background: #f4f6f9;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -101,9 +123,10 @@ onBeforeUnmount(() => {
 }
 
 .el-header {
-  background: var(--el-bg-color);
-  border-bottom: solid 1px var(--el-border-color);
-  padding: 0 0 0 0;
+  background: #ffffff;
+  border-bottom: 1px solid #edf0f4;
+  padding: 0;
+  height: 60px;
   @media (max-width: 767px) {
     height: 50px;
   }

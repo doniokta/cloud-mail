@@ -10,7 +10,10 @@
     <div v-else :style="background"></div>
     <div class="form-wrapper">
       <div class="container">
-        <span class="form-title">{{ settingStore.settings.title }}</span>
+        <div class="login-brand">
+          <img :src="clashmateLogo" alt="Clashmate" class="login-logo" />
+          <span class="form-title">{{ settingStore.settings.title || 'Clashmate' }}</span>
+        </div>
         <span class="form-desc" v-if="show === 'login'">{{ $t('loginTitle') }}</span>
         <span class="form-desc" v-else>{{ $t('regTitle') }}</span>
         <div v-show="show === 'login'">
@@ -171,6 +174,7 @@ import {permsToRouter} from "@/perm/perm.js";
 import {useI18n} from "vue-i18n";
 import {oauthBindUser, oauthLinuxDoLogin, oauthGithubLogin, oauthGoogleLogin} from "@/request/ouath.js";
 import {reloadTurnstileScript} from "@/utils/turnstile-script.js";
+import clashmateLogo from "@/assets/logo.png";
 
 const {t} = useI18n();
 const accountStore = useAccountStore();
@@ -686,6 +690,20 @@ function submitRegister() {
   height: 100%;
   border-left: 1px solid var(--login-border);
   box-shadow: var(--el-box-shadow-light);
+
+  .login-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+
+    .login-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+  }
   @media (max-width: 1024px) {
     padding: 20px 18px;
     width: 384px;

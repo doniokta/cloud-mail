@@ -1,10 +1,10 @@
 <template>
   <div ref="searchRef" class="email-search">
     <div class="search-placeholder" @click="openSearch">
-      <Icon icon="akar-icons:search" width="20" height="20"/>
       <span class="search-placeholder-text" :class="{ 'has-search-text': savedSearchSummary }" :title="savedSearchSummary">
-        {{ savedSearchSummary || t('searchMail') }}
+        {{ savedSearchSummary || 'Search...' }}
       </span>
+      <Icon class="search-icon" icon="solar:magnifer-linear" width="18" height="18"/>
     </div>
     <el-button
       class="mobile-search-button"
@@ -300,23 +300,32 @@ onBeforeUnmount(() => {
 
 .search-placeholder {
   width: 100%;
-  height: 36px;
-  border-radius: 6px;
+  height: 38px;
+  border-radius: 10px;
   box-sizing: border-box;
-}
-
-.search-placeholder {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 10px;
-  background: var(--el-fill-color-light);
-  color: var(--el-text-color-secondary);
+  justify-content: space-between;
+  padding: 0 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
   text-align: left;
   white-space: nowrap;
   cursor: text;
   position: relative;
   z-index: 0;
+  transition: all 0.2s ease;
+}
+
+.search-placeholder:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.search-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
 }
 
 .search-placeholder-text {

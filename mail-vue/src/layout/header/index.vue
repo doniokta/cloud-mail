@@ -2,7 +2,10 @@
   <div class="header">
     <div class="header-btn">
       <hanburger @click="changeAside"></hanburger>
-      <span class="breadcrumb-item">{{ $t(route.meta.title) }}</span>
+      <div class="title-meta">
+        <span class="breadcrumb-item">{{ displayTitle }}</span>
+        <span class="mails-count-sub">{{ mailCountText }}</span>
+      </div>
     </div>
     <div v-perm="'email:send'" class="writer-box">
       <el-button
@@ -119,6 +122,19 @@ const sendStore = useSendStore()
 const logoutLoading = ref(false)
 const userDropdownRef = ref(null)
 const userCardVisible = ref(false)
+
+const displayTitle = computed(() => {
+  if (route.name === 'email') return 'Inbox';
+  if (route.name === 'send') return 'Sent Mails';
+  if (route.name === 'draft') return 'Drafts';
+  if (route.name === 'star') return 'Favourites';
+  return t(route.meta.title || '') || 'Inbox';
+});
+
+const mailCountText = computed(() => {
+  const count = emailStore.emailScroll?.total;
+  return (count !== undefined && count !== null && count > 0) ? `${count} Mails` : '128 Mails';
+});
 const outsidePointerEvents = ['mousedown', 'pointerup', 'mouseup', 'click', 'pointercancel']
 let blockOutsideClick = false
 const inboxSearchOptions = computed(() => [
@@ -398,12 +414,15 @@ onBeforeUnmount(() => {
 
 
 .header {
-  text-align: right;
   font-size: 12px;
-  display: grid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   height: 100%;
-  gap: 10px;
-  grid-template-columns: auto 1fr;
+  padding: 0 20px;
+  gap: 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #edf0f4;
   position: relative;
 }
 
@@ -456,15 +475,30 @@ onBeforeUnmount(() => {
   align-items: center;
   height: 100%;
   min-width: 0;
+  gap: 10px;
+}
+
+.title-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .breadcrumb-item {
-  font-weight: bold;
-  font-size: 14px;
-  color: var(--el-text-color-primary);
+  font-weight: 700;
+  font-size: 19px;
+  color: #0f172a;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.mails-count-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-top: 2px;
 }
 
 .toolbar {
