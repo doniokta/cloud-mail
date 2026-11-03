@@ -31,12 +31,12 @@ body {
     line-height: 1.5;
     color: #1e293b;
     font-size: 14px;
-    background-color: #eaedf1;
+    background-color: #ffffff;
     -webkit-font-smoothing: antialiased;
 }
 
 html, body {
-    background: #eaedf1;
+    background: #ffffff;
 }
 
 ul, ol {

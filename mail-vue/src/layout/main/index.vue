@@ -161,7 +161,9 @@ const handleResize = () => {
 
 
 .main-view {
-  background: var(--el-bg-color);
+  background: #f4f6f8;
+  height: 100%;
+  overflow: hidden;
 }
 
 

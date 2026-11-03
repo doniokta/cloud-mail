@@ -81,45 +81,30 @@ onBeforeUnmount(() => {
 }
 
 .layout {
-  height: 100%;
+  height: 100vh;
   position: fixed;
-  width: 100%;
+  width: 100vw;
   top: 0;
   left: 0;
   overflow: hidden;
-  background: #eaedf1;
-}
-
-@media (min-width: 1200px) {
-  .layout {
-    padding: 12px;
-    box-sizing: border-box;
-  }
-
-  .el-aside {
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
-    overflow: hidden;
-    box-shadow: -1px 0 0 rgba(0, 0, 0, 0.05);
-  }
-
-  .main-container {
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-  }
+  background: #ffffff;
 }
 
 .main-container {
+  height: 100vh;
   min-height: 100%;
-  background: #f4f6f9;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  background: #f4f6f8;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .el-main {
   padding: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .el-header {
@@ -127,6 +112,7 @@ onBeforeUnmount(() => {
   border-bottom: 1px solid #edf0f4;
   padding: 0;
   height: 60px;
+  flex-shrink: 0;
   @media (max-width: 767px) {
     height: 50px;
   }

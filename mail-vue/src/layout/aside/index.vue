@@ -12,14 +12,14 @@
 
       <!-- Brand / Logo Section -->
       <div class="brand-section">
-        <img class="logo" :src="clashmateLogo" alt="Clashmate" />
+        <img class="logo" :src="clashmateLogo" alt="Clashmate.id Mail" />
         <span class="brand-name">{{ brandTitle }}</span>
       </div>
 
-      <!-- New Mail Button -->
+      <!-- New Mail / Compose Button -->
       <button v-perm="'email:send'" class="compose-btn" type="button" @click="openCompose">
         <Icon icon="ic:round-plus" width="20" height="20" />
-        <span>New Mail</span>
+        <span>{{ $t('compose') || 'New Mail' }}</span>
       </button>
 
       <!-- Section: Mail -->
@@ -28,123 +28,87 @@
         <div class="nav-item" :class="{ active: route.name === 'email' }" @click="router.push({name: 'email'})">
           <div class="nav-left">
             <Icon icon="solar:inbox-line-duotone" width="20" height="20" />
-            <span class="nav-label">Inbox</span>
+            <span class="nav-label">{{ $t('inbox') }}</span>
           </div>
-          <span class="nav-badge">{{ inboxCount }}</span>
+          <span class="nav-badge" v-if="emailStore.emailScroll?.total">{{ emailStore.emailScroll.total }}</span>
         </div>
 
         <div v-perm="'email:send'" class="nav-item" :class="{ active: route.name === 'send' }" @click="router.push({name: 'send'})">
           <div class="nav-left">
             <Icon icon="solar:plain-2-line-duotone" width="20" height="20" />
-            <span class="nav-label">Sent Mails</span>
+            <span class="nav-label">{{ $t('sent') }}</span>
           </div>
-          <span class="nav-badge">27</span>
         </div>
 
         <div v-perm="'email:send'" class="nav-item" :class="{ active: route.name === 'draft' }" @click="router.push({name: 'draft'})">
           <div class="nav-left">
             <Icon icon="solar:pen-new-square-linear" width="19" height="19" />
-            <span class="nav-label">Drafts</span>
-          </div>
-          <span class="nav-badge">3</span>
-        </div>
-
-        <div class="nav-item" :class="{ active: route.name === 'spam' }" @click="router.push({name: 'email'})">
-          <div class="nav-left">
-            <Icon icon="solar:shield-warning-linear" width="20" height="20" />
-            <span class="nav-label">Spam</span>
-          </div>
-          <span class="nav-badge">136</span>
-        </div>
-
-        <div class="nav-item" :class="{ active: route.name === 'trash' }" @click="router.push({name: 'email'})">
-          <div class="nav-left">
-            <Icon icon="solar:trash-bin-trash-linear" width="19" height="19" />
-            <span class="nav-label">Trash</span>
+            <span class="nav-label">{{ $t('drafts') }}</span>
           </div>
         </div>
 
         <div class="nav-item" :class="{ active: route.name === 'star' }" @click="router.push({name: 'star'})">
           <div class="nav-left">
             <Icon icon="solar:star-line-duotone" width="20" height="20" />
-            <span class="nav-label">Favourites</span>
-          </div>
-          <span class="nav-badge">48</span>
-        </div>
-      </div>
-
-      <!-- Section: Others -->
-      <div class="nav-section-title">Others</div>
-      <div class="nav-list">
-        <div class="nav-item" @click="handleOthers('Calendar')">
-          <div class="nav-left">
-            <Icon icon="solar:calendar-linear" width="20" height="20" />
-            <span class="nav-label">Calendar</span>
+            <span class="nav-label">{{ $t('starred') }}</span>
           </div>
         </div>
 
-        <div class="nav-item" @click="handleOthers('Plans')">
-          <div class="nav-left">
-            <Icon icon="solar:checklist-minimalistic-linear" width="20" height="20" />
-            <span class="nav-label">Plans</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section: Manage (Settings / Admin) -->
-      <div class="nav-section-title" v-perm="['all-email:query','user:query','role:query','setting:query','analysis:query','reg-key:query']">
-        Manage
-      </div>
-      <div class="nav-list">
         <div class="nav-item" :class="{ active: route.name === 'setting' }" @click="router.push({name: 'setting'})">
           <div class="nav-left">
             <Icon icon="solar:settings-linear" width="20" height="20" />
-            <span class="nav-label">Settings</span>
-          </div>
-        </div>
-
-        <div v-perm="'analysis:query'" class="nav-item" :class="{ active: route.name === 'analysis' }" @click="router.push({name: 'analysis'})">
-          <div class="nav-left">
-            <Icon icon="solar:chart-2-linear" width="20" height="20" />
-            <span class="nav-label">Analytics</span>
-          </div>
-        </div>
-
-        <div v-perm="'user:query'" class="nav-item" :class="{ active: route.name === 'user' }" @click="router.push({name: 'user'})">
-          <div class="nav-left">
-            <Icon icon="solar:users-group-rounded-linear" width="20" height="20" />
-            <span class="nav-label">Users</span>
-          </div>
-        </div>
-
-        <div v-perm="'all-email:query'" class="nav-item" :class="{ active: route.name === 'all-email' }" @click="router.push({name: 'all-email'})">
-          <div class="nav-left">
-            <Icon icon="solar:letter-linear" width="20" height="20" />
-            <span class="nav-label">All Mail</span>
-          </div>
-        </div>
-
-        <div v-perm="'role:query'" class="nav-item" :class="{ active: route.name === 'role' }" @click="router.push({name: 'role'})">
-          <div class="nav-left">
-            <Icon icon="solar:lock-password-linear" width="20" height="20" />
-            <span class="nav-label">Permissions</span>
-          </div>
-        </div>
-
-        <div v-perm="'reg-key:query'" class="nav-item" :class="{ active: route.name === 'reg-key' }" @click="router.push({name: 'reg-key'})">
-          <div class="nav-left">
-            <Icon icon="solar:key-linear" width="20" height="20" />
-            <span class="nav-label">Invite Code</span>
-          </div>
-        </div>
-
-        <div v-perm="'setting:query'" class="nav-item" :class="{ active: route.name === 'sys-setting' }" @click="router.push({name: 'sys-setting'})">
-          <div class="nav-left">
-            <Icon icon="solar:shield-check-linear" width="20" height="20" />
-            <span class="nav-label">System Settings</span>
+            <span class="nav-label">{{ $t('settings') }}</span>
           </div>
         </div>
       </div>
+
+      <!-- Section: Manage (Admin routes) -->
+      <template v-if="hasAnyManagePerm">
+        <div class="nav-section-title">{{ $t('manage') || 'Manage' }}</div>
+        <div class="nav-list">
+          <div v-perm="'analysis:query'" class="nav-item" :class="{ active: route.name === 'analysis' }" @click="router.push({name: 'analysis'})">
+            <div class="nav-left">
+              <Icon icon="solar:chart-2-linear" width="20" height="20" />
+              <span class="nav-label">{{ $t('analytics') }}</span>
+            </div>
+          </div>
+
+          <div v-perm="'user:query'" class="nav-item" :class="{ active: route.name === 'user' }" @click="router.push({name: 'user'})">
+            <div class="nav-left">
+              <Icon icon="solar:users-group-rounded-linear" width="20" height="20" />
+              <span class="nav-label">{{ $t('allUsers') }}</span>
+            </div>
+          </div>
+
+          <div v-perm="'all-email:query'" class="nav-item" :class="{ active: route.name === 'all-email' }" @click="router.push({name: 'all-email'})">
+            <div class="nav-left">
+              <Icon icon="solar:letter-linear" width="20" height="20" />
+              <span class="nav-label">{{ $t('allMail') }}</span>
+            </div>
+          </div>
+
+          <div v-perm="'role:query'" class="nav-item" :class="{ active: route.name === 'role' }" @click="router.push({name: 'role'})">
+            <div class="nav-left">
+              <Icon icon="solar:lock-password-linear" width="20" height="20" />
+              <span class="nav-label">{{ $t('permissions') }}</span>
+            </div>
+          </div>
+
+          <div v-perm="'reg-key:query'" class="nav-item" :class="{ active: route.name === 'reg-key' }" @click="router.push({name: 'reg-key'})">
+            <div class="nav-left">
+              <Icon icon="solar:key-linear" width="20" height="20" />
+              <span class="nav-label">{{ $t('inviteCode') }}</span>
+            </div>
+          </div>
+
+          <div v-perm="'setting:query'" class="nav-item" :class="{ active: route.name === 'sys-setting' }" @click="router.push({name: 'sys-setting'})">
+            <div class="nav-left">
+              <Icon icon="solar:shield-check-linear" width="20" height="20" />
+              <span class="nav-label">{{ $t('SystemSettings') }}</span>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
   </el-scrollbar>
 </template>
@@ -157,8 +121,8 @@ import {Icon} from "@iconify/vue";
 import {useSettingStore} from "@/store/setting.js";
 import {useUiStore} from "@/store/ui.js";
 import {useEmailStore} from "@/store/email.js";
+import {hasPerm} from "@/perm/perm.js";
 import clashmateLogo from "@/assets/logo.png";
-import {ElMessage} from "element-plus";
 
 const settingStore = useSettingStore();
 const uiStore = useUiStore();
@@ -166,26 +130,21 @@ const emailStore = useEmailStore();
 const route = useRoute();
 
 const brandTitle = computed(() => {
-  return settingStore.settings.title || 'Clashmate';
+  return settingStore.settings.title || 'Clashmate.id Mail';
 });
 
-const inboxCount = computed(() => {
-  const count = emailStore.emailScroll?.total;
-  return (count !== undefined && count !== null && count > 0) ? count : 349;
+const hasAnyManagePerm = computed(() => {
+  return hasPerm(['all-email:query','user:query','role:query','setting:query','analysis:query','reg-key:query']);
 });
 
 function openCompose() {
   uiStore.writerRef.open();
 }
-
-function handleOthers(name) {
-  ElMessage.info(`${name} is coming soon`);
-}
 </script>
 
 <style lang="scss" scoped>
 .scroll {
-  height: 100%;
+  height: 100vh;
   background: #ffffff;
   border-right: 1px solid #edf0f4;
 }
@@ -198,7 +157,7 @@ function handleOthers(name) {
 
 /* Mac window controls */
 .mac-header {
-  padding: 4px 6px 14px;
+  padding: 4px 6px 16px;
 }
 
 .mac-dots {
@@ -238,7 +197,7 @@ function handleOthers(name) {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 6px 16px;
+  padding: 0 6px 18px;
 
   .logo {
     width: 32px;
@@ -248,10 +207,13 @@ function handleOthers(name) {
   }
 
   .brand-name {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     color: #0f172a;
     letter-spacing: -0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -328,18 +290,17 @@ function handleOthers(name) {
   }
 
   .nav-badge {
-    font-size: 12.5px;
-    font-weight: 500;
-    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 7px;
+    border-radius: 10px;
   }
 
   &:hover {
     background: #f8fafc;
     color: #1e293b;
-
-    .nav-badge {
-      color: #64748b;
-    }
   }
 
   &.active {
@@ -358,8 +319,8 @@ function handleOthers(name) {
     }
 
     .nav-badge {
-      color: #0f172a;
-      font-weight: 600;
+      color: #1d68ff;
+      background: #eff6ff;
     }
   }
 }

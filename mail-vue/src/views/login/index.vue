@@ -11,8 +11,8 @@
     <div class="form-wrapper">
       <div class="container">
         <div class="login-brand">
-          <img :src="clashmateLogo" alt="Clashmate" class="login-logo" />
-          <span class="form-title">{{ settingStore.settings.title || 'Clashmate' }}</span>
+          <img :src="clashmateLogo" alt="Clashmate.id Mail" class="login-logo" />
+          <span class="form-title">{{ settingStore.settings.title || 'Clashmate.id Mail' }}</span>
         </div>
         <span class="form-desc" v-if="show === 'login'">{{ $t('loginTitle') }}</span>
         <span class="form-desc" v-else>{{ $t('regTitle') }}</span>

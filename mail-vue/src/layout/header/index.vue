@@ -4,7 +4,7 @@
       <hanburger @click="changeAside"></hanburger>
       <div class="title-meta">
         <span class="breadcrumb-item">{{ displayTitle }}</span>
-        <span class="mails-count-sub">{{ mailCountText }}</span>
+        <span class="mails-count-sub" v-if="mailCountText">{{ mailCountText }}</span>
       </div>
     </div>
     <div v-perm="'email:send'" class="writer-box">
@@ -124,16 +124,12 @@ const userDropdownRef = ref(null)
 const userCardVisible = ref(false)
 
 const displayTitle = computed(() => {
-  if (route.name === 'email') return 'Inbox';
-  if (route.name === 'send') return 'Sent Mails';
-  if (route.name === 'draft') return 'Drafts';
-  if (route.name === 'star') return 'Favourites';
-  return t(route.meta.title || '') || 'Inbox';
+  return t(route.meta.title || '') || 'Clashmate.id Mail';
 });
 
 const mailCountText = computed(() => {
   const count = emailStore.emailScroll?.total;
-  return (count !== undefined && count !== null && count > 0) ? `${count} Mails` : '128 Mails';
+  return (count !== undefined && count !== null) ? `${count} Mails` : '';
 });
 const outsidePointerEvents = ['mousedown', 'pointerup', 'mouseup', 'click', 'pointercancel']
 let blockOutsideClick = false

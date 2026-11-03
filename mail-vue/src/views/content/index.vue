@@ -1,71 +1,77 @@
 <template>
   <div class="box">
-    <div class="header-actions">
-      <Icon v-if="!props.isEmbedded" class="icon" icon="material-symbols-light:arrow-back-ios-new" width="20" height="20" @click="handleBack"/>
-      <Icon v-perm="'email:delete'" class="icon" icon="uiw:delete" width="16" height="16" @click="handleDelete"/>
-      <span class="star" v-if="emailStore.contentData.showStar">
-        <Icon class="icon" @click="changeStar" v-if="email.isStar" icon="fluent-color:star-16" width="20" height="20"/>
-        <Icon class="icon" @click="changeStar" v-else icon="solar:star-line-duotone" width="18.5" height="18.5"/>
-      </span>
-      <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openReply" icon="fluent-mdl2:reply" width="19" height="19" />
-      <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openForward" icon="iconoir:arrow-up-right" width="20" height="20" />
-    </div>
-    <div></div>
-    <el-scrollbar class="scrollbar">
-      <div class="container">
-        <div class="email-title">
-          {{ email.subject || 'Welcome to Cyprode Mail App!' }}
-        </div>
-        <div class="content">
-          <div class="email-info modern-sender-info">
-            <div class="sender-avatar-wrap">
-              <div class="sender-avatar">
-                <Icon icon="solar:users-group-rounded-bold-duotone" width="22" height="22" color="#1d68ff" />
-              </div>
-              <div class="sender-meta">
-                <div class="sender-name">{{ email.name || 'Team Cyprode' }}</div>
-                <div class="sender-email">{{ email.sendEmail || 'hello@cyprode.com' }}</div>
-              </div>
-            </div>
-            <div class="date" v-if="email.createTime">
-              <div>{{ formatDetailDate(email.createTime) }}</div>
-            </div>
-          </div>
-          <el-alert v-if="email.status === 3" :closable="false" :title="toMessage(email.message)" class="email-msg" type="error" show-icon />
-          <el-alert v-if="email.status === 4" :closable="false" :title="$t('complained')" class="email-msg" type="warning" show-icon />
-          <el-alert v-if="email.status === 5" :closable="false" :title="$t('delayed')" class="email-msg" type="warning" show-icon />
-
-          <el-scrollbar class="htm-scrollbar" :class="!email.attList?.length ? 'bottom-distance' : ''">
-            <ShadowHtml class="shadow-html" :html="formatImage(email.content)" v-if="email.content" />
-            <pre v-else class="email-text" >{{email.text}}</pre>
-          </el-scrollbar>
-          <div class="att" v-if="email.attList?.length > 0">
-            <div class="att-title">
-              <span>{{$t('attachments')}}</span>
-              <span>{{$t('attCount',{total: email.attList.length})}}</span>
-            </div>
-            <div class="att-box">
-
-              <div class="att-item" v-for="att in email.attList" :key="att.attId">
-                <div class="att-icon" @click="showImage(att.key)">
-                  <Icon v-bind="getIconByName(att.filename)" />
-                </div>
-                <div class="att-name" @click="showImage(att.key)">
-                  {{ att.filename }}
-                </div>
-                <div class="att-size">{{ formatBytes(att.size) }}</div>
-                <div class="opt-icon att-icon">
-                  <Icon v-if="isImage(att.filename)" icon="hugeicons:view" width="22" height="22" @click="showImage(att.key)"/>
-                  <a :href="cvtR2Url(att.key)" download>
-                    <Icon icon="system-uicons:push-down" width="22" height="22"/>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <template v-if="email && email.emailId">
+      <div class="header-actions">
+        <Icon v-if="!props.isEmbedded" class="icon" icon="material-symbols-light:arrow-back-ios-new" width="20" height="20" @click="handleBack"/>
+        <Icon v-perm="'email:delete'" class="icon" icon="uiw:delete" width="16" height="16" @click="handleDelete"/>
+        <span class="star" v-if="emailStore.contentData.showStar">
+          <Icon class="icon" @click="changeStar" v-if="email.isStar" icon="fluent-color:star-16" width="20" height="20"/>
+          <Icon class="icon" @click="changeStar" v-else icon="solar:star-line-duotone" width="18.5" height="18.5"/>
+        </span>
+        <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openReply" icon="fluent-mdl2:reply" width="19" height="19" />
+        <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openForward" icon="iconoir:arrow-up-right" width="20" height="20" />
       </div>
-    </el-scrollbar>
+      <div></div>
+      <el-scrollbar class="scrollbar">
+        <div class="container">
+          <div class="email-title">
+            {{ email.subject || 'No Subject' }}
+          </div>
+          <div class="content">
+            <div class="email-info modern-sender-info">
+              <div class="sender-avatar-wrap">
+                <div class="sender-avatar">
+                  <Icon icon="solar:user-bold-duotone" width="22" height="22" color="#1d68ff" />
+                </div>
+                <div class="sender-meta">
+                  <div class="sender-name">{{ email.name || email.sendEmail }}</div>
+                  <div class="sender-email">{{ email.sendEmail }}</div>
+                </div>
+              </div>
+              <div class="date" v-if="email.createTime">
+                <div>{{ formatDetailDate(email.createTime) }}</div>
+              </div>
+            </div>
+            <el-alert v-if="email.status === 3" :closable="false" :title="toMessage(email.message)" class="email-msg" type="error" show-icon />
+            <el-alert v-if="email.status === 4" :closable="false" :title="$t('complained')" class="email-msg" type="warning" show-icon />
+            <el-alert v-if="email.status === 5" :closable="false" :title="$t('delayed')" class="email-msg" type="warning" show-icon />
+
+            <el-scrollbar class="htm-scrollbar" :class="!email.attList?.length ? 'bottom-distance' : ''">
+              <ShadowHtml class="shadow-html" :html="formatImage(email.content)" v-if="email.content" />
+              <pre v-else class="email-text" >{{email.text}}</pre>
+            </el-scrollbar>
+            <div class="att" v-if="email.attList?.length > 0">
+              <div class="att-title">
+                <span>{{$t('attachments')}}</span>
+                <span>{{$t('attCount',{total: email.attList.length})}}</span>
+              </div>
+              <div class="att-box">
+
+                <div class="att-item" v-for="att in email.attList" :key="att.attId">
+                  <div class="att-icon" @click="showImage(att.key)">
+                    <Icon v-bind="getIconByName(att.filename)" />
+                  </div>
+                  <div class="att-name" @click="showImage(att.key)">
+                    {{ att.filename }}
+                  </div>
+                  <div class="att-size">{{ formatBytes(att.size) }}</div>
+                  <div class="opt-icon att-icon">
+                    <Icon v-if="isImage(att.filename)" icon="hugeicons:view" width="22" height="22" @click="showImage(att.key)"/>
+                    <a :href="cvtR2Url(att.key)" download>
+                      <Icon icon="system-uicons:push-down" width="22" height="22"/>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-scrollbar>
+    </template>
+    <div v-else class="empty-reader-state">
+      <Icon icon="solar:letter-unread-linear" width="60" height="60" color="#cbd5e1" />
+      <div class="empty-reader-title">{{ $t('noMessagesFound') || 'No email selected' }}</div>
+    </div>
     <el-image-viewer
         v-if="showPreview"
         :url-list="srcList"
@@ -115,34 +121,13 @@ const props = defineProps({
   }
 })
 
-const defaultDemoContent = {
-  emailId: 1002,
-  name: 'Team Cyprode',
-  sendEmail: 'hello@cyprode.com',
-  subject: 'Welcome to Cyprode Mail App!',
-  createTime: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
-  formatCreateTime: '3 hours ago',
-  recipient: JSON.stringify([{address: 'umut.sahin@example.com'}]),
-  content: `
-    <div style="font-family: inherit; color: #1e293b; line-height: 1.65; max-width: 720px;">
-      <p style="font-weight: 700; font-size: 16px; margin-bottom: 16px; color: #0f172a;">Hello Umut Sahin,</p>
-      <p style="margin-bottom: 16px; color: #374151;">Welcome to Cyprode Mail App! We are thrilled to have you join us. Get ready for a secure, fast, and user-friendly email experience.</p>
-      <p style="margin-bottom: 16px; color: #374151;">Cyprode Mail App offers a range of comprehensive features to keep you connected, and organize your tasks effortlessly. Our user interface is designed to be simple and intuitive, allowing you to quickly navigate your inbox.</p>
-      <p style="font-weight: 600; margin-bottom: 10px; color: #0f172a;">A few reminders and tips:</p>
-      <ol style="margin-bottom: 20px; padding-left: 20px; line-height: 1.8; color: #374151;">
-        <li style="margin-bottom: 8px;"><strong>Inbox:</strong> Click on the "Inbox" tab to check your incoming messages. From here, you can view, reply to, and organize your new emails.</li>
-        <li style="margin-bottom: 8px;"><strong>Folders:</strong> Create folders to categorize your messages. This feature helps you easily locate relevant emails whenever needed.</li>
-        <li style="margin-bottom: 8px;"><strong>Filters:</strong> Automatically filter and label incoming messages. This can be handy to quickly find important messages and keep your inbox organized.</li>
-      </ol>
-      <p style="margin-bottom: 16px; color: #374151;">We strive to provide you with a user-friendly and reliable email experience. If you have questions, feedback, or need assistance, please feel free to reach out to our team.</p>
-      <p style="font-weight: 500; color: #0f172a;">Wishing you a great email experience!</p>
-    </div>
-  `,
+const email = computed(() => emailStore.contentData.email || {
+  emailId: 0,
+  attList: [],
+  content: '',
   text: '',
-  attList: []
-};
-
-const email = computed(() => emailStore.contentData.email || defaultDemoContent)
+  recipient: '[]',
+})
 
 const sentViaEmail = computed(() => {
   const raw = String(email.value.senderEmail || '').trim()
@@ -347,6 +332,23 @@ const handleDelete = () => {
 .box {
   height: 100%;
   overflow: hidden;
+  background: #ffffff;
+}
+
+.empty-reader-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #94a3b8;
+  gap: 12px;
+
+  .empty-reader-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #64748b;
+  }
 }
 
 .header-actions {
