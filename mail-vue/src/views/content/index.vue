@@ -1,77 +1,77 @@
 <template>
   <div class="box">
-    <template v-if="email && email.emailId">
-      <div class="header-actions">
-        <Icon v-if="!props.isEmbedded" class="icon" icon="material-symbols-light:arrow-back-ios-new" width="20" height="20" @click="handleBack"/>
-        <Icon v-perm="'email:delete'" class="icon" icon="uiw:delete" width="16" height="16" @click="handleDelete"/>
-        <span class="star" v-if="emailStore.contentData.showStar">
-          <Icon class="icon" @click="changeStar" v-if="email.isStar" icon="fluent-color:star-16" width="20" height="20"/>
-          <Icon class="icon" @click="changeStar" v-else icon="solar:star-line-duotone" width="18.5" height="18.5"/>
-        </span>
-        <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openReply" icon="fluent-mdl2:reply" width="19" height="19" />
-        <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openForward" icon="iconoir:arrow-up-right" width="20" height="20" />
-      </div>
-      <div></div>
-      <el-scrollbar class="scrollbar">
-        <div class="container">
-          <div class="email-title">
-            {{ email.subject || 'No Subject' }}
-          </div>
-          <div class="content">
-            <div class="email-info modern-sender-info">
-              <div class="sender-avatar-wrap">
-                <div class="sender-avatar">
-                  <Icon icon="solar:user-bold-duotone" width="22" height="22" color="#1d68ff" />
-                </div>
-                <div class="sender-meta">
-                  <div class="sender-name">{{ email.name || email.sendEmail }}</div>
-                  <div class="sender-email">{{ email.sendEmail }}</div>
+    <div class="header-actions">
+      <Icon class="icon" icon="material-symbols-light:arrow-back-ios-new" width="20" height="20" @click="handleBack"/>
+      <Icon v-perm="'email:delete'" class="icon" icon="uiw:delete" width="16" height="16" @click="handleDelete"/>
+      <span class="star" v-if="emailStore.contentData.showStar">
+        <Icon class="icon" @click="changeStar" v-if="email.isStar" icon="fluent-color:star-16" width="20" height="20"/>
+        <Icon class="icon" @click="changeStar" v-else icon="solar:star-line-duotone" width="18.5" height="18.5"/>
+      </span>
+      <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openReply" icon="fluent-mdl2:reply" width="19" height="19" />
+      <Icon class="icon" v-if="emailStore.contentData.showReply" v-perm="'email:send'"  @click="openForward" icon="iconoir:arrow-up-right" width="20" height="20" />
+    </div>
+    <div></div>
+    <el-scrollbar class="scrollbar">
+      <div class="container">
+        <div class="email-title">
+          {{ email.subject }}
+        </div>
+        <div class="content">
+          <div class="email-info">
+            <div>
+              <div class="send"><span class="send-source">{{$t('from')}}</span>
+                <div class="send-name" ref="sendNameRef" :class="{ 'is-wrapped': senderWrapped }">
+                  <span class="send-name-title">{{ email.name }}</span>
+                  <span class="send-email"><{{ email.sendEmail }}></span>
+                  <span class="sent-via" v-if="sentViaEmail">
+                    <el-tooltip effect="dark" :content="$t('sentVia', { email: sentViaEmail })">
+                      <span>
+                        <el-tag size="small" disable-transitions>{{ $t('sentViaTag') }}</el-tag>
+                      </span>
+                    </el-tooltip>
+                  </span>
                 </div>
               </div>
-              <div class="date" v-if="email.createTime">
+              <div class="receive"><span class="source">{{$t('recipient')}}</span><span class="receive-email">{{  formateReceive(email.recipient) }}</span></div>
+              <div class="date">
                 <div>{{ formatDetailDate(email.createTime) }}</div>
               </div>
             </div>
             <el-alert v-if="email.status === 3" :closable="false" :title="toMessage(email.message)" class="email-msg" type="error" show-icon />
             <el-alert v-if="email.status === 4" :closable="false" :title="$t('complained')" class="email-msg" type="warning" show-icon />
             <el-alert v-if="email.status === 5" :closable="false" :title="$t('delayed')" class="email-msg" type="warning" show-icon />
+          </div>
+          <el-scrollbar class="htm-scrollbar" :class="!email.attList?.length ? 'bottom-distance' : ''">
+            <ShadowHtml class="shadow-html" :html="formatImage(email.content)" v-if="email.content" />
+            <pre v-else class="email-text" >{{email.text}}</pre>
+          </el-scrollbar>
+          <div class="att" v-if="email.attList?.length > 0">
+            <div class="att-title">
+              <span>{{$t('attachments')}}</span>
+              <span>{{$t('attCount',{total: email.attList.length})}}</span>
+            </div>
+            <div class="att-box">
 
-            <el-scrollbar class="htm-scrollbar" :class="!email.attList?.length ? 'bottom-distance' : ''">
-              <ShadowHtml class="shadow-html" :html="formatImage(email.content)" v-if="email.content" />
-              <pre v-else class="email-text" >{{email.text}}</pre>
-            </el-scrollbar>
-            <div class="att" v-if="email.attList?.length > 0">
-              <div class="att-title">
-                <span>{{$t('attachments')}}</span>
-                <span>{{$t('attCount',{total: email.attList.length})}}</span>
-              </div>
-              <div class="att-box">
-
-                <div class="att-item" v-for="att in email.attList" :key="att.attId">
-                  <div class="att-icon" @click="showImage(att.key)">
-                    <Icon v-bind="getIconByName(att.filename)" />
-                  </div>
-                  <div class="att-name" @click="showImage(att.key)">
-                    {{ att.filename }}
-                  </div>
-                  <div class="att-size">{{ formatBytes(att.size) }}</div>
-                  <div class="opt-icon att-icon">
-                    <Icon v-if="isImage(att.filename)" icon="hugeicons:view" width="22" height="22" @click="showImage(att.key)"/>
-                    <a :href="cvtR2Url(att.key)" download>
-                      <Icon icon="system-uicons:push-down" width="22" height="22"/>
-                    </a>
-                  </div>
+              <div class="att-item" v-for="att in email.attList" :key="att.attId">
+                <div class="att-icon" @click="showImage(att.key)">
+                  <Icon v-bind="getIconByName(att.filename)" />
+                </div>
+                <div class="att-name" @click="showImage(att.key)">
+                  {{ att.filename }}
+                </div>
+                <div class="att-size">{{ formatBytes(att.size) }}</div>
+                <div class="opt-icon att-icon">
+                  <Icon v-if="isImage(att.filename)" icon="hugeicons:view" width="22" height="22" @click="showImage(att.key)"/>
+                  <a :href="cvtR2Url(att.key)" download>
+                    <Icon icon="system-uicons:push-down" width="22" height="22"/>
+                  </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </el-scrollbar>
-    </template>
-    <div v-else class="empty-reader-state">
-      <Icon icon="solar:letter-unread-linear" width="60" height="60" color="#cbd5e1" />
-      <div class="empty-reader-title">{{ $t('noMessagesFound') || 'No email selected' }}</div>
-    </div>
+      </div>
+    </el-scrollbar>
     <el-image-viewer
         v-if="showPreview"
         :url-list="srcList"
@@ -113,13 +113,6 @@ let senderResizeObserver = null
 const showPreview = ref(false)
 const srcList = reactive([])
 
-
-const props = defineProps({
-  isEmbedded: {
-    type: Boolean,
-    default: false
-  }
-})
 
 const email = computed(() => emailStore.contentData.email || {
   emailId: 0,
@@ -332,23 +325,6 @@ const handleDelete = () => {
 .box {
   height: 100%;
   overflow: hidden;
-  background: #ffffff;
-}
-
-.empty-reader-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #94a3b8;
-  gap: 12px;
-
-  .empty-reader-title {
-    font-size: 15px;
-    font-weight: 500;
-    color: #64748b;
-  }
 }
 
 .header-actions {
@@ -377,67 +353,18 @@ const handleDelete = () => {
 
 .container {
   font-size: 14px;
-  padding: 24px 32px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
   @media (max-width: 1023px) {
-    padding: 16px 20px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
   .email-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 20px;
-    letter-spacing: -0.3px;
-    line-height: 1.3;
-  }
-
-  .modern-sender-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #f1f5f9;
-
-    .sender-avatar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      .sender-avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        background: #eff6ff;
-        border: 1px solid #dbeafe;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-
-      .sender-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-
-        .sender-name {
-          font-size: 15px;
-          font-weight: 600;
-          color: #0f172a;
-        }
-
-        .sender-email {
-          font-size: 13px;
-          color: #64748b;
-        }
-      }
-    }
-
-    .date {
-      font-size: 12.5px;
-      color: #94a3b8;
-    }
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
   }
 
   .htm-scrollbar {

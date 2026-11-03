@@ -38,46 +38,78 @@
                         :key="keyCount"
         >
           <template #default="{ data: item, index }" >
-            <div :class="['email-row', 'email-card', props.type, { 'right-checked': item.rightChecked, 'active-card': emailStore.contentData.email?.emailId === item.emailId }]"
+            <div :class="['email-row', props.type, { 'right-checked': item.rightChecked }]"
                  :data-checked="item.checked"
                  @click="jumpDetails(item)"
                  v-if="!item.expand"
                  :key="item.emailId"
                  @contextmenu="handleContextmenu($event, item)"
             >
-              <div class="card-inner">
-                <div class="card-top-row">
-                  <div class="card-sender-left">
-                    <span class="card-unread-dot" v-if="(item.unread === EmailUnreadEnum.UNREAD && showUnread) || item.unread === 0">•</span>
-                    <span class="card-sender-name">
-                      <slot name="name" :email="item"><span v-html="item.nameHtml || item.name || item.sendEmail"></span></slot>
+              <el-checkbox :class=" props.type === 'all-email' ? 'all-email-checkbox' : 'checkbox'"
+                           v-model="item.checked"
+                           :disabled="!item.checked && isSelectMax"
+                           @click.stop></el-checkbox>
+              <div @click.stop="starChange(item)" class="pc-star" v-if="showStar">
+                <Icon v-if="item.isStar" icon="fluent-color:star-16" width="20" height="20"/>
+                <Icon v-else icon="solar:star-line-duotone" width="18" height="18"/>
+              </div>
+              <div v-if="!showStar"></div>
+              <div class="title" :class="accountShow ? 'title-column' : 'title-column'">
+
+                <div class="email-sender" :style=" (showStatus ? 'gap: 10px;' : '') + ((item.unread === EmailUnreadEnum.UNREAD && showUnread)  ? 'font-weight: bold' : '')">
+                  <div class="email-status" v-if="showStatus">
+                    <el-tooltip v-if="item.statusIcon" effect="dark" :content="item.statusIcon.content">
+                      <Icon :icon="item.statusIcon.icon" :style="`color: ${item.statusIcon.color}`" width="20" height="20"/>
+                    </el-tooltip>
+                    <div class="del-status" v-if="item.isDel && item.status !== 6">
+                      <el-tooltip effect="dark" :content="item.isDelContent">
+                        <Icon class="icon" icon="mdi:email-remove" width="20" height="20"/>
+                      </el-tooltip>
+                    </div>
+                  </div>
+                  <div v-else></div>
+                  <span class="name">
+                    <span>
+                      <div class="unread" v-if="isMobile && (item.unread === EmailUnreadEnum.UNREAD && showUnread) "/>
+                      <slot name="name" :email="item"><span v-html="item.nameHtml"></span></slot>
                     </span>
-                    <span class="card-star-badge" v-if="item.isStar">★</span>
-                  </div>
-                  <span class="card-time-label">{{ item.formatCreateTime }}</span>
-                </div>
-
-                <div class="card-subject-row">
-                  <span v-if="item.code" class="code-tag" @click.stop="copyCode(item.code)">[{{ t('codeLabel') }}{{ item.code }}]</span>
-                  <span class="card-subject-text">
-                    <slot name="subject" :email="item"><span v-html="item.subjectHtml || item.subject || 'No Subject'"></span></slot>
+                    <span>
+                      <Icon v-if="item.isStar" icon="fluent-color:star-16" width="18" height="18"/>
+                    </span>
                   </span>
+                  <span class="phone-time">{{ item.formatCreateTime }}</span>
                 </div>
-
-                <div class="card-snippet-row">
-                  <span class="card-snippet-text" v-html="item.listHtml || item.snippet || item.text || ''"></span>
-                </div>
-
-                <div class="user-info" v-if="showUserInfo">
-                  <div class="user">
-                    <span><Icon icon="mynaui:user" width="18" height="18"/></span>
-                    <span v-html="item.userEmailHtml"></span>
+                <div>
+                  <div class="email-text">
+                    <span class="email-subject" :style="(item.unread === EmailUnreadEnum.UNREAD && showUnread)  ? 'font-weight: bold' : ''">
+                      <div class="unread" v-if="!isMobile && (item.unread === EmailUnreadEnum.UNREAD && showUnread) "/>
+                      <span v-if="item.code" class="code-tag" @click.stop="copyCode(item.code)">[{{ t('codeLabel') }}{{ item.code }}]</span>
+                      <span class="subject-text">
+                        <slot name="subject" :email="item" >
+                          <span v-html="item.subjectHtml"></span>
+                        </slot>
+                      </span>
+                    </span>
+                    <span class="email-content" v-html="item.listHtml"></span>
                   </div>
-                  <div class="account">
-                    <span><Icon icon="mdi-light:email" width="18" height="18"/></span>
-                    <span v-html="item.accountEmailHtml"></span>
+                  <div class="user-info" v-if="showUserInfo">
+                    <div class="user">
+                      <span>
+                        <Icon icon="mynaui:user" width="20" height="20"/>
+                      </span>
+                      <span v-html="item.userEmailHtml"></span>
+                    </div>
+                    <div class="account">
+                      <span>
+                        <Icon icon="mdi-light:email" width="20" height="20"/>
+                      </span>
+                      <span v-html="item.accountEmailHtml"></span>
+                    </div>
                   </div>
                 </div>
+              </div>
+              <div class="email-right" :style="showUserInfo ? 'align-self: start;':''">
+                <span class="email-time" :style="(item.unread === EmailUnreadEnum.UNREAD && showUnread) ? 'font-weight: bold' : ''">{{ item.formatCreateTime }}</span>
               </div>
             </div>
             <skeletonBlock v-else-if="item.expand === 'loading'"
@@ -373,9 +405,9 @@ const list = computed(() => {
 
 const itemHeight = computed(() => {
     if (props.type === 'all-email') {
-      return 132;
+      return isMobile.value ? 132 : 65;
     } else  {
-      return 112;
+      return isMobile.value ? 83 : 48;
     }
 })
 
@@ -935,7 +967,6 @@ function renderHighlight(value) {
   grid-template-rows: auto 1fr;
   padding: 0;
   font-size: 14px;
-  background: #f4f6f8;
   color: var(--el-text-color-primary);
   overflow: hidden;
   height: 100%;
@@ -995,106 +1026,6 @@ function renderHighlight(value) {
     pointer-events: none;
     transition: var(--loading-hide-transition);
     opacity: 0;
-  }
-}
-
-:deep(.email-row.email-card) {
-  display: block !important;
-  box-sizing: border-box !important;
-  margin: 6px 14px 10px !important;
-  padding: 13px 16px !important;
-  background: #ffffff !important;
-  border-radius: 14px !important;
-  border: 1px solid #edf0f5 !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02) !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  height: auto !important;
-  min-height: 98px !important;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
-    border-color: #cbd5e1 !important;
-  }
-
-  &.active-card {
-    background: #e0efff !important;
-    border-color: #bfdbfe !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08) !important;
-  }
-
-  .card-inner {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .card-top-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 5px;
-
-    .card-sender-left {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-
-      .card-unread-dot {
-        color: #1d68ff;
-        font-size: 18px;
-        line-height: 1;
-        font-weight: bold;
-      }
-
-      .card-sender-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #0f172a;
-      }
-
-      .card-star-badge {
-        color: #f59e0b;
-        font-size: 13px;
-        margin-left: 2px;
-      }
-    }
-
-    .card-time-label {
-      font-size: 12px;
-      color: #94a3b8;
-      font-weight: 400;
-      white-space: nowrap;
-    }
-  }
-
-  .card-subject-row {
-    margin-bottom: 4px;
-
-    .card-subject-text {
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #1e293b;
-      line-height: 1.35;
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  .card-snippet-row {
-    .card-snippet-text {
-      font-size: 12.5px;
-      color: #64748b;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
   }
 }
 
@@ -1398,13 +1329,12 @@ function renderHighlight(value) {
 }
 
 .header-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: 15px;
-  padding: 8px 16px;
-  background: #f4f6f8;
-  border-bottom: 1px solid #edf0f5;
+  padding: 3px 15px;
+  box-shadow: var(--header-actions-border);
 
   .header-left {
     display: flex;

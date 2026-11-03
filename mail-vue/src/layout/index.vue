@@ -81,38 +81,29 @@ onBeforeUnmount(() => {
 }
 
 .layout {
-  height: 100vh;
+  height: 100%;
   position: fixed;
-  width: 100vw;
+  width: 100%;
   top: 0;
   left: 0;
   overflow: hidden;
-  background: #ffffff;
 }
 
 .main-container {
-  height: 100vh;
   min-height: 100%;
-  background: #f4f6f8;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  background: var(--el-bg-color);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .el-main {
   padding: 0;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .el-header {
-  background: #ffffff;
-  border-bottom: 1px solid #edf0f4;
-  padding: 0;
-  height: 60px;
-  flex-shrink: 0;
+  background: var(--el-bg-color);
+  border-bottom: solid 1px var(--el-border-color);
+  padding: 0 0 0 0;
   @media (max-width: 767px) {
     height: 50px;
   }
