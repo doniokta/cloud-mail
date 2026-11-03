@@ -43,10 +43,9 @@ run_worker_first = true
 crons = ["0 * * * *"]
 
 [vars]
-# Konfigurasi aplikasi akan ditambahkan setelah database siap
-# domain = ["clashmate.id"]
-# admin = "admin@clashmate.id"
-# jwt_secret = "GANTI_DENGAN_SECRET_ACAK_YANG_KUAT"
+orm_log = false
+domain = ["clashmate.id"]
+admin = "admin@clashmate.id"
 
 [build]
 command = "pnpm --prefix ../mail-vue install && pnpm --prefix ../mail-vue run build"
