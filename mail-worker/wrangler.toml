@@ -9,10 +9,10 @@ enabled = true
 
 # D1 Database
 # Akan diaktifkan setelah database dibuat
-# [[d1_databases]]
-# binding = "db"
-# database_name = "clashmate-mail-db"
-# database_id = "ISI_DATABASE_ID"
+[[d1_databases]]
+binding = "db"
+database_name = "clashmate-mail"
+database_id = "95d56125-0d59-41dd-9dca-87676e98262a"
 
 # Workers KV
 [[kv_namespaces]]
